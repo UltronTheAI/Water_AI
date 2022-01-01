@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="dev">
+        <div class="cen">
+        <div class="light" id="green"></div>
+        <div class="of">OFF</div>
+        <div class="info"><span id="h">00</span><span id="m">00</span><span id="s">00</span></div>
+        <button class="bof" onclick="nth()">OFF</button>
+        <button class="bof2" onclick="nth2()">INFO</button>
+    </div>
+    </div>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        body {
+            background: #222;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dev{
+            width: 350px;
+            height: 500px;
+            border-radius: 64% 36% 47% 53% / 46% 23% 77% 54% ;
+            background: linear-gradient(30deg, rgb(22, 6, 243), rgb(255, 3, 79));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dev .cen .light {
+            width: 150px;
+            height: 100px;
+            border-radius: 5px;
+            position: relative;
+            top: -40px;
+        }
+        #green {
+            background: rgb(13, 240, 107);
+        }
+        #red{
+            background: rgb(250, 5, 58);
+        }
+        .dev .cen .of {
+            color: rgba(255, 255, 255, 0.329);
+            padding: 4px;
+            text-align: center;
+            background: rgba(34, 34, 34, 0.295);
+            padding-top: 5px;
+            width: 80px;
+            justify-content: center;
+            position: relative;
+            left: 18%;
+            padding-bottom: 5px;
+            border-radius: 5px;
+            backdrop-filter: blur(5px);
+            transition: 0.5s;
+        }
+        .dev .cen .of:hover {
+            background: rgb(255, 0, 119);
+            color: #fff;
+        }
+        .dev .cen button:hover {
+            background: rgb(255, 0, 119);
+            color: #fff;
+        }
+        .dev .cen button {
+            color: rgba(255, 255, 255, 0.329);
+            padding: 10px;
+            text-align: center;
+            background: rgba(255, 196, 2, 0.377);
+            width: 80px;
+            justify-content: center;
+            position: relative;
+            left: 18%;
+            border-radius: 5px;
+            backdrop-filter: blur(5px);
+            transition: 0.5s;
+            border: 0;
+            margin-top: 20px;
+        }
+        .dev .cen .info {
+            width: 200px;
+            padding: 10px;
+            position: relative;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            margin-top: 10px;
+        }
+        .dev .cen .info span{
+            color: #fff;
+            margin-left: 10px;
+        }
+        .dev .cen .info #m{
+            color: rgba(255, 255, 255, 0.705);
+        }
+        .dev .cen .info #s{
+            color: rgba(255, 255, 255, 0.377);
+        }
+    </style>
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    <script>
+
+        var name_ = localStorage.getItem('name');
+        if (name_ == null) {
+            localStorage.setItem('name', prompt('Name'));
+            name_ = localStorage.getItem('name');
+        }
+        if (name_.replace(' ', '') == '') {
+            localStorage.setItem('name', prompt('Name'));
+            name_ = localStorage.getItem('name');
+        }
+
+        var light = document.querySelector('.light');
+        var light_oof = document.querySelector('.of');
+        var light_onooff_button = document.querySelector('.bof');
+        var hour = document.getElementById('h');
+        var min = document.getElementById('m');
+        var sec = document.getElementById('s');
+        const socket = io('http://localhost:5000/');
+
+        var opo = '';
+
+        socket.on('connection');
+        socket.on('get', (data) => {
+            console.log(data);
+            light_color = data[0];
+            if (light_color == 'ON'){
+                light_color = 'red';
+                opo = 'OFF';
+            }
+            if (light_color == 'OFF') {
+                light_color = 'green';
+                opo = 'ON';
+            }
+
+            light.setAttribute('id', light_color);
+            light_oof.innerHTML = data[0];
+            light_onooff_button.innerHTML = opo;
+        });
+        socket.on('hms', data => {
+            hour.innerHTML = data[0];
+            min.innerHTML = data[1];
+            sec.innerHTML = data[2];
+        });
+        function nth() {
+            socket.emit('change', name_);
+        }
+        function nth2(){
+            location.href = "/info";
+        }
+    </script>
+</body>
+
+</html>
