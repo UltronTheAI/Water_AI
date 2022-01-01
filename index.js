@@ -80,7 +80,8 @@ io.on("connection", (socket) => {
             h = 0;
             go = 1;
         }
-        socket.emit('get', dev);        
+        socket.emit('get', dev);   
+        socket.broadcast.emit('get', dev);
     });
 
     socket.on('dev', (data) => {
